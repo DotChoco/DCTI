@@ -1,10 +1,12 @@
 namespace DCTI.Models
 {
-    public class MColor {
+    public class MColor
+    {
         public const string DEFAULT_COLOR = "AC90D8";
         const int HexMask = 0xFF;
         public string HexColor { get; set; }
-        public static void SetTextColor(string hex = DEFAULT_COLOR){
+        public static void SetTextColor(string hex = DEFAULT_COLOR)
+        {
             if (hex == string.Empty)
                 hex = DEFAULT_COLOR;
 
@@ -20,7 +22,7 @@ namespace DCTI.Models
             Console.Write($"\u001b[38;2;{r};{g};{b}m");
         }
         public static void ResetTextColor() => Console.Write("\u001b[0m");
-        
-        
+
+
     }
 }

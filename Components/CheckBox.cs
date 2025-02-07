@@ -1,19 +1,17 @@
 ﻿using DCTI.Models;
 
-namespace DCTI.Components;
-
-public sealed class CheckBox: Renderable
+namespace DCTI.Components
 {
-    public CheckBox()
+    public sealed class CheckBox : Component
     {
-        
-    }
+        public CheckBox()
+        {
 
-    protected override void RenderBorders() {
-        
-    }
+        }
 
-    public override void Render() {
-        
+        public override void Render()
+        {
+
+        }
     }
 }

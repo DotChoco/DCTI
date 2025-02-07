@@ -1,20 +1,20 @@
 using System.Text;
-using Windows.Networking.Sockets;
 using DCTI.Models;
 using DCTI.Structs;
 
 namespace DCTI.Components
 {
-    public sealed class Table: Renderable {
-        
+    public sealed class Table : MFields
+    {
+
         #region Variables
-        
+
         //Private
         private StringBuilder _sb = new();
-        private TbContent _tb = new(new string[,] { { "Example" }});
+        private TbContent _tb = new(new string[,] { { "Example" } });
         private string _textColor = MColor.DEFAULT_COLOR;
         private string[] _tbRender = Array.Empty<string>();
-        
+
         //public
         public string PlaceHolder = string.Empty;
 
@@ -22,53 +22,58 @@ namespace DCTI.Components
 
 
 
-        public Table(TbContent tb, Vector2 position){ 
+        public Table(TbContent tb)
+        {
             _tb = tb;
             if (tb.TbColor != string.Empty)
                 BorderColor = tb.TbColor;
-                
+
             if (tb.TextColor != string.Empty)
                 _textColor = tb.TextColor;
-            
-            if(position.x != default && position.y != default)
-                Transform.position = position;
+
+            Transform.position = new();
             _tb.ItemsMaxLenght = new(10, 1);
             BorderMapping();
         }
 
 
-        private void BorderMapping(){
-            
+        private void BorderMapping()
+        {
+
             string data = string.Empty;
             StringBuilder sbRow = new();
             int extraRows = 0, rowSize = _tb.Content.GetLength(0);
             int colSize = _tb.Content.GetLength(1);
             int baseSeparators = 2, colSeparators = colSize - 1;
-            int tableLength = (colSize * _tb.ItemsMaxLenght.x) 
+            int tableLength = (colSize * _tb.ItemsMaxLenght.x)
                             + baseSeparators + colSeparators;
-            
+
             colSeparators = _tb.Content.GetLength(1) - 1;
 
             for (int i = 0; i < rowSize; i++)
-                { extraRows += ItHasJumps(_tb.Content, i);}
-            
+            { extraRows += ItHasJumps(_tb.Content, i); }
+
             _tbRender = new string[rowSize + baseSeparators + extraRows];
-            
-            for (int row = 0; row < rowSize; row++) {
+
+            for (int row = 0; row < rowSize; row++)
+            {
                 if (row == 0) { RenderMiddleLines(tableLength, 0); }
-                
+
                 int multLines = ItHasJumps(_tb.Content, row);
                 _sb.Append(VERTICAL_BAR);
-                
-                for (int colum = 0; colum < colSize; colum++) {
+
+                for (int colum = 0; colum < colSize; colum++)
+                {
                     data = _tb.Content[row, colum];
-                    if (multLines > 0) {
+                    if (multLines > 0)
+                    {
                         sbRow.Append(RowItem(data));
                         _sb.Append(sbRow.ToString());
                     }
-                    else {
+                    else
+                    {
                         _sb.Append(data);
-                        _sb.Append(new string(' ', 
+                        _sb.Append(new string(' ',
                             _tb.ItemsMaxLenght.x - data.Length));
                         _sb.Append(VERTICAL_BAR);
                     }
@@ -76,7 +81,7 @@ namespace DCTI.Components
 
                 _tbRender[row + 1] = _sb.ToString();
                 _sb.Clear();
-                
+
                 RenderMiddleLines(tableLength, row + 2);
             }
         }
@@ -99,11 +104,12 @@ namespace DCTI.Components
         string RowItem(string data)
         {
             StringBuilder sbRow = new();
-            for (int i = 0; i < data.Length; i++) {
+            for (int i = 0; i < data.Length; i++)
+            {
                 if (i == data.Length - 1)
                 {
                     int rest = data.Length / _tb.ItemsMaxLenght.x + 1;
-                    sbRow.Append(new string(' ', 
+                    sbRow.Append(new string(' ',
                         _tb.ItemsMaxLenght.x - rest));
                     sbRow.Append(VERTICAL_BAR);
                 }
@@ -117,7 +123,8 @@ namespace DCTI.Components
 
         void RenderMiddleLines(int tableLength, int index)
         {
-            for (int i = 0; i < tableLength; i++) {
+            for (int i = 0; i < tableLength; i++)
+            {
                 if (i % (_tb.ItemsMaxLenght.x + 1) == 0)
                     _sb.Append(VERTICAL_BAR);
                 else
@@ -130,15 +137,16 @@ namespace DCTI.Components
         int ItHasJumps(string[,] data, int rowIndex)
         {
             int lines = 0;
-            for (int i = 0; i < data.GetLength(0); i++) {
-                if(data[rowIndex,i].Contains('\n') || data[rowIndex,i].Contains('\r'))
+            for (int i = 0; i < data.GetLength(0); i++)
+            {
+                if (data[rowIndex, i].Contains('\n') || data[rowIndex, i].Contains('\r'))
                     lines++;
             }
 
             return lines;
         }
 
-        
+
     }
 
 

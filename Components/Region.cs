@@ -1,19 +1,22 @@
 using DCTI.Models;
 
-namespace DCTI.Components;
-
-public sealed class Region: Renderable
+namespace DCTI.Components
 {
+    public sealed class Region : MFields
+    {
 
-    public sealed override void Render() {
-        
+        public sealed override void Render()
+        {
+
+        }
+
+
+        protected sealed override void RenderBorders()
+        {
+
+        }
+
+
+
     }
-
-
-    protected sealed override void RenderBorders() {
-        
-    }
-
-
-
 }
