@@ -1,9 +1,8 @@
 namespace DCTI.Structs
 {
-    public class MText
+    public sealed class MText
     {
         public string value { get; set; }
-        public string color { get; set; }
+        public string color { get; set; } = "AC90D8";
     }
-
 }

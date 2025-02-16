@@ -7,13 +7,13 @@ namespace DCTI.Components
 
         public sealed override void Render()
         {
-
+            RenderBorders();
         }
 
 
-        protected sealed override void RenderBorders()
+        private void RenderBorders()
         {
-
+            
         }
 
 

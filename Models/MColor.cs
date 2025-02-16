@@ -1,6 +1,6 @@
 namespace DCTI.Models
 {
-    public class MColor
+    public sealed class MColor
     {
         public const string DEFAULT_COLOR = "AC90D8";
         const int HexMask = 0xFF;

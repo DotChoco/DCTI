@@ -1,159 +1,104 @@
 using System.Text;
 using DCTI.Models;
 using DCTI.Structs;
+using DCTI.Structs.Table;
 
-namespace DCTI.Components
+namespace DCTI.Components;
+
+
+public sealed class Table : MFields
 {
-    public sealed class Table : MFields
+
+    #region Variables
+
+    //Private
+    private StringBuilder _sb = new();
+    private TbContent _tb;
+    private string _textColor = Color.DEFAULT_COLOR;
+    private string[] _tbRender = Array.Empty<string>();
+
+    //public
+    public string PlaceHolder = string.Empty;
+
+    #endregion
+
+
+    public Table() =>  _tb = null;
+    public Table(TbContent tb) => _tb = tb;
+
+    
+    private void BorderMapping() {
+        int rowSize = _tb.Content.GetLength(0);
+        int colSize = _tb.Content.GetLength(1); 
+        int indexTbData = 0;
+        
+        ItemData[] tableData = new ItemData[rowSize];
+        ItemData actualItem = new(){ column = 0, row = 0 , length = 0 };
+        
+        //Get the Longer Item Length by each Row
+        for (int i = 0; i < _tb.Content.GetLength(0); i++) {
+            for (int j = 0; j < _tb.Content.GetLength(1); j++) {
+                actualItem = new() {
+                    length = _tb.Content[i, j].value.Length,
+                    row = i,
+                    column = j,
+                    height = 1
+                };
+                if (IsHigherThanPreview(tableData[indexTbData], actualItem)) {
+                    if (actualItem.length > _tb.FieldsWidth){ actualItem.height++; }
+
+                    tableData[indexTbData] = actualItem;
+                }
+            }
+            indexTbData++;
+        }
+        
+        //Make TopSeparator
+        _sb.Append(MakeTopLine(colSize, _tb.FieldsWidth));
+        
+        
+        //Make the rows
+        for (int i = 0; i < rowSize; i++) {
+            _sb.Append(MakeMidLine(colSize, _tb.FieldsWidth, 
+                tableData[i].height));
+            
+            //Make a separator bettwen Rows
+            if (_tb.SeparetedRows && i < rowSize - 1) {
+                _sb.Append(MakeMidLine(colSize, _tb.FieldsWidth, 1, true));
+            }
+        }
+        
+        
+        //Make Botton Separator
+        _sb.Append(MakeBottonLine(colSize, _tb.FieldsWidth));
+        
+        _tbRender = _sb.ToString().Split('\n');
+    }
+    
+    
+    bool IsHigherThanPreview(ItemData savedItem, ItemData actualItem)
+        => actualItem.length > savedItem.length;
+    
+    public sealed override void Render()
     {
-
-        #region Variables
-
-        //Private
-        private StringBuilder _sb = new();
-        private TbContent _tb = new(new string[,] { { "Example" } });
-        private string _textColor = MColor.DEFAULT_COLOR;
-        private string[] _tbRender = Array.Empty<string>();
-
-        //public
-        public string PlaceHolder = string.Empty;
-
-        #endregion
-
-
-
-        public Table(TbContent tb)
-        {
-            _tb = tb;
-            if (tb.TbColor != string.Empty)
-                BorderColor = tb.TbColor;
-
-            if (tb.TextColor != string.Empty)
-                _textColor = tb.TextColor;
-
-            Transform.position = new();
-            _tb.ItemsMaxLenght = new(10, 1);
+        if (_tb != null) {
+            Style = _tb.Style;
             BorderMapping();
+            RenderTable();
         }
-
-
-        private void BorderMapping()
-        {
-
-            string data = string.Empty;
-            StringBuilder sbRow = new();
-            int extraRows = 0, rowSize = _tb.Content.GetLength(0);
-            int colSize = _tb.Content.GetLength(1);
-            int baseSeparators = 2, colSeparators = colSize - 1;
-            int tableLength = (colSize * _tb.ItemsMaxLenght.x)
-                            + baseSeparators + colSeparators;
-
-            colSeparators = _tb.Content.GetLength(1) - 1;
-
-            for (int i = 0; i < rowSize; i++)
-            { extraRows += ItHasJumps(_tb.Content, i); }
-
-            _tbRender = new string[rowSize + baseSeparators + extraRows];
-
-            for (int row = 0; row < rowSize; row++)
-            {
-                if (row == 0) { RenderMiddleLines(tableLength, 0); }
-
-                int multLines = ItHasJumps(_tb.Content, row);
-                _sb.Append(VERTICAL_BAR);
-
-                for (int colum = 0; colum < colSize; colum++)
-                {
-                    data = _tb.Content[row, colum];
-                    if (multLines > 0)
-                    {
-                        sbRow.Append(RowItem(data));
-                        _sb.Append(sbRow.ToString());
-                    }
-                    else
-                    {
-                        _sb.Append(data);
-                        _sb.Append(new string(' ',
-                            _tb.ItemsMaxLenght.x - data.Length));
-                        _sb.Append(VERTICAL_BAR);
-                    }
-                }
-
-                _tbRender[row + 1] = _sb.ToString();
-                _sb.Clear();
-
-                RenderMiddleLines(tableLength, row + 2);
-            }
-        }
-
-
-        public sealed override void Render() => RenderBorders();
-
-
-        protected override void RenderBorders()
-        {
-            MColor.SetTextColor(BorderColor);
-            for (int i = 0; i < _tbRender.Length; i++)
-            {
-                SetCursorPosition(Transform.position.x, Transform.position.y + i);
-                Console.Write(_tbRender[i]);
-            }
-        }
-
-
-        string RowItem(string data)
-        {
-            StringBuilder sbRow = new();
-            for (int i = 0; i < data.Length; i++)
-            {
-                if (i == data.Length - 1)
-                {
-                    int rest = data.Length / _tb.ItemsMaxLenght.x + 1;
-                    sbRow.Append(new string(' ',
-                        _tb.ItemsMaxLenght.x - rest));
-                    sbRow.Append(VERTICAL_BAR);
-                }
-                if (i % _tb.ItemsMaxLenght.x == 0)
-                    sbRow.Append($"{data[i]}\n{VERTICAL_BAR}");
-                else
-                    sbRow.Append($"{data[i]}");
-            }
-            return sbRow.ToString();
-        }
-
-        void RenderMiddleLines(int tableLength, int index)
-        {
-            for (int i = 0; i < tableLength; i++)
-            {
-                if (i % (_tb.ItemsMaxLenght.x + 1) == 0)
-                    _sb.Append(VERTICAL_BAR);
-                else
-                    _sb.Append(INNER_LINE);
-            }
-            _tbRender[index] = _sb.ToString();
-            _sb.Clear();
-        }
-
-        int ItHasJumps(string[,] data, int rowIndex)
-        {
-            int lines = 0;
-            for (int i = 0; i < data.GetLength(0); i++)
-            {
-                if (data[rowIndex, i].Contains('\n') || data[rowIndex, i].Contains('\r'))
-                    lines++;
-            }
-
-            return lines;
-        }
-
-
     }
 
 
+    private void RenderTable()
+    {
+        Color.SetTextColor(DEFAULT_BORDER_COLOR);
+        for (int i = 0; i < _tbRender.Length; i++)
+        {
+            SetCursorPosition(transform.position.x, transform.position.y + i);
+            Console.Write(_tbRender[i]);
+        }
+    }
+
+   
 }
-
-
-
-
-
 
