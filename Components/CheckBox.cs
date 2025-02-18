@@ -18,16 +18,23 @@ public sealed class CheckBox : Component
     public CheckBox() {}
     public CheckBox(MText title) => _title = title;
 
-    public sealed override void Render() {
+    public sealed override Component Render() {
+        
+        Console.CursorVisible = false;
         SetCursorPosition(transform.position);
-        Console.Write($"{_box}");
+        _box = SetAscii();
+        Console.Write($"{_box}\t{_title.value}");
+        return this;
     }
 
     public void Toggle() {
         _checked = !_checked;
-        _box = _checked ? checkboxChecked : checkboxUnchecked;
-        
+        _box = SetAscii();
+        SetCursorPosition(transform.position);
+        Console.Write($"{_box}");
     }
+
+    char SetAscii() => _checked ? checkboxChecked : checkboxUnchecked;
     
     
     

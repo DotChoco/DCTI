@@ -29,9 +29,10 @@ public sealed class Tree : Component
 
     public Tree() { }
 
-    public sealed override void Render()
+    public sealed override Component Render()
     {
         RenderFathers(_content);
+        return this;
     }
 
     void RenderFathers(List<TItem> items)

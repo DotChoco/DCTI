@@ -6,13 +6,12 @@ using DCTI.Structs.Table;
 namespace DCTI.Components;
 
 
-public sealed class Table : MFields
+public sealed class Table : Fields
 {
 
     #region Variables
 
     //Private
-    private StringBuilder _sb = new();
     private TbContent _tb;
     private string _textColor = Color.DEFAULT_COLOR;
     private string[] _tbRender = Array.Empty<string>();
@@ -26,6 +25,11 @@ public sealed class Table : MFields
     public Table() =>  _tb = null;
     public Table(TbContent tb) => _tb = tb;
 
+    public void SetData(TbContent tb) {
+        _tb = tb;
+        Style = _tb.Style;
+        SbData.Clear();
+    }
     
     private void BorderMapping() {
         int rowSize = _tb.Content.GetLength(0);
@@ -53,52 +57,39 @@ public sealed class Table : MFields
             indexTbData++;
         }
         
-        //Make TopSeparator
-        _sb.Append(MakeTopLine(colSize, _tb.FieldsWidth));
         
+        //Make TopSeparator
+        MakeTopLine(colSize, _tb.FieldsWidth);
         
         //Make the rows
         for (int i = 0; i < rowSize; i++) {
-            _sb.Append(MakeMidLine(colSize, _tb.FieldsWidth, 
-                tableData[i].height));
+            MakeMidLine(colSize, _tb.FieldsWidth, 
+                tableData[i].height);
             
             //Make a separator bettwen Rows
             if (_tb.SeparetedRows && i < rowSize - 1) {
-                _sb.Append(MakeMidLine(colSize, _tb.FieldsWidth, 1, true));
+                MakeMidLine(colSize, _tb.FieldsWidth, 1, true);
             }
         }
         
-        
         //Make Botton Separator
-        _sb.Append(MakeBottonLine(colSize, _tb.FieldsWidth));
-        
-        _tbRender = _sb.ToString().Split('\n');
+        MakeBottonLine(colSize, _tb.FieldsWidth);
     }
     
     
     bool IsHigherThanPreview(ItemData savedItem, ItemData actualItem)
         => actualItem.length > savedItem.length;
     
-    public sealed override void Render()
+    public sealed override Component Render()
     {
-        if (_tb != null) {
-            Style = _tb.Style;
-            BorderMapping();
-            RenderTable();
-        }
-    }
-
-
-    private void RenderTable()
-    {
-        Color.SetTextColor(DEFAULT_BORDER_COLOR);
-        for (int i = 0; i < _tbRender.Length; i++)
+        if (_tb != null)
         {
-            SetCursorPosition(transform.position.x, transform.position.y + i);
-            Console.Write(_tbRender[i]);
+            SetData(_tb);
+            BorderMapping();
+            base.Render();
         }
+        return this;
     }
 
-   
 }
 

@@ -5,7 +5,6 @@ using DCTI.Structs;
 namespace DCTI.Components;
 public sealed class Text : Component
 {
-    private Color _color { get; set; } = new();
     private MText _text = new();
     public Text(MText text) {
         _text = text;
@@ -14,10 +13,11 @@ public sealed class Text : Component
     
     public Text() { }
 
-    public sealed override void Render()
+    public sealed override Component Render()
     {
         SetCursorPosition(transform.position);
         Console.Write(_text.value);
+        return this;
     }
 
 }

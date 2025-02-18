@@ -1,13 +1,15 @@
 using System.Text;
+using DCTI.Structs;
 using DCTI.Structs.Enums;
 namespace DCTI.Models;
-public abstract class MFields : Component
+public abstract class Fields : Component
 {
     //Extra Cons 
     private const char SPACE_CHAR = (char)32;
     private const char CARRIAGE_RETURN = '\n';
 
     
+    //Chars to make the Field
     private char _topLeftCorner;
     private char _topRightCorner;
     
@@ -26,41 +28,73 @@ public abstract class MFields : Component
     
     
     //Variables
-    protected const string DEFAULT_BORDER_COLOR = "AC90D8";
+    private StringBuilder _data = new();
+    private string[] _lines = Array.Empty<string>();
+
+    protected string _color = Color.DEFAULT_COLOR;
+    protected const string DEFAULT_BORDER_COLOR = Color.DEFAULT_COLOR;
     protected FieldStyles Style = FieldStyles.Basic;
+    protected StringBuilder SbData { get=> _data; set => _data = value; }
     protected int _width;
     protected int _height;
     protected int _minWidth = 10;
     protected int _minHeight = 1;
     
-    public int MaxHeight { get => _height; set => _height = value; }
-    public int MaxWidth { get => _width; set => _width = value; }
-    
+    public int Height { get => _height; set => _height = value; }
+    public int Width { get => _width; set => _width = value; }
     
     
     //Size Methods
     public Component SetSize(int width, int height)
+        => SetSize(new(width, height));
+    public Component SetSize(Vector2 size) {
+        _width = size.x > _minWidth ? size.x : _minWidth;
+        _height = size.y > _minHeight ? size.y : _minHeight;
+        return this;
+    }
+
+    public Vector2 GetSize()  => new (_width, _height);
+    
+    
+    
+    
+    //Render Methods
+    public override Component Render()
     {
-        _width = width > _minWidth ? width : _minWidth;
-        _height = height > _minHeight ? height : _minHeight;
+        Color.SetTextColor(_color);
+        string[] lines = _data.ToString().Split('\n');
+        
+        for (int i = 0; i < lines.Length; i++) {
+            SetCursorPosition(transform.position.x, transform.position.y + i);
+            Console.Write(lines[i]);
+        }
+        
+        
+        return this;
+    }
+    public Component SetColor(string hex) {
+        Color.SetTextColor(_color);
+        Color.SetTextColor(hex);
         return this;
     }
     
     
     
+    
+    
+    
+    
     //Style Methods
-    protected string MakeMidLine(
+    protected void MakeMidLine(
         int colSize, int width , 
         int height = 1, bool separator = false
     ) {
         SetStyle();
         char middleChar = separator ? _innerLine : SPACE_CHAR;
-        StringBuilder sb = new();
-        
         for (int i = 0; i < height; i++)
         {
             //Draw the first item of the line
-            sb.Append(DrawFirstItem(middleChar, _leftSideLine, 
+            _data.Append(DrawFirstItem(middleChar, _leftSideLine, 
                 width, separator));
             
             //Draw the mid items of the line
@@ -68,62 +102,57 @@ public abstract class MFields : Component
                 
                 //Draw the last item of the line
                 if (j == colSize - 1) {
-                    sb.Append(DrawLastItem(middleChar, _rightSideLine, 
+                    _data.Append(DrawLastItem(middleChar, _rightSideLine, 
                         width, separator));
                 }
                 else {
-                    sb.Append(DrawLastItem(middleChar, _intersectionLine, 
+                    _data.Append(DrawLastItem(middleChar, _intersectionLine, 
                         width, separator));
                 }
             }
-            sb.Append(CARRIAGE_RETURN);
+            _data.Append(CARRIAGE_RETURN);
         }
-        return sb.ToString();
     }
     
-    protected string MakeTopLine(
+    protected void MakeTopLine(
         int colSize, int width
     ){
         SetStyle();
-        StringBuilder sb = new();
         
         //left cornner
-        sb.Append(_topLeftCorner);
+        _data.Append(_topLeftCorner);
         
         for (int i = 0; i < colSize; i++) {
-            sb.Append(new string(_innerLine, width));
+            _data.Append(new string(_innerLine, width));
             
             if (colSize > 1 && i < colSize - 1)
-                sb.Append(_verticalTopLine);
+                _data.Append(_verticalTopLine);
         }
         //right cornner
-        sb.Append(_topRightCorner);
-        sb.Append(CARRIAGE_RETURN);
+        _data.Append(_topRightCorner);
+        _data.Append(CARRIAGE_RETURN);
         
-        return sb.ToString();
     }
     
-    protected string MakeBottonLine(
+    protected void MakeBottonLine(
         int colSize, int width
     ) {
         SetStyle();
-        StringBuilder sb = new();
         
         //left cornner
-        sb.Append(_bottonLeftCorner);
+        _data.Append(_bottonLeftCorner);
 
         for (int i = 0; i < colSize; i++) {
-            sb.Append(new string(_innerLine, width));
+            _data.Append(new string(_innerLine, width));
         
             if (colSize > 1 && i < colSize - 1)
-                sb.Append(_verticalBottonLine);
+                _data.Append(_verticalBottonLine);
         }
         
         //right cornner
-        sb.Append(_bottonRightCorner);
-        sb.Append(CARRIAGE_RETURN);
+        _data.Append(_bottonRightCorner);
+        _data.Append(CARRIAGE_RETURN);
         
-        return sb.ToString();
     }
 
     
@@ -144,6 +173,13 @@ public abstract class MFields : Component
         int width, bool separator = false)
         => separator ? focusChar: _verticalLine;
     
+    
+    
+    
+    
+    
+    
+    //Style Methods
     private void SetStyle()
     {
         if (Style == FieldStyles.Basic)
@@ -210,5 +246,9 @@ public abstract class MFields : Component
         _bottonLeftCorner = '+'; //BLC
         _bottonRightCorner = '+'; //BRC
     }
+    
+    
+    
+    
     
 }

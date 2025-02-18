@@ -4,7 +4,7 @@ using DCTI.Structs.Enums;
 using DCTI.Models;
 
 namespace DCTI.Components;
-public sealed class InputField : MFields
+public sealed class InputField : Fields
 {
 
     #region Variables
@@ -26,56 +26,45 @@ public sealed class InputField : MFields
     
     public InputField(InputFieldData data) => _data = data;
 
-    void SetData(InputFieldData data) {
+    public void SetData(InputFieldData data)
+    {
+        //Reset StreamBuilder Data
+        SbData.Clear();
         
         //Set Colors for the Placeholder
         _data.Placeholder.color = data.Placeholder.color == string.Empty ? DEFAULT_PH_COLOR : data.Placeholder.color;
 
         //Set Colors that applied to Borders
         _data.ContentColor = data.ContentColor == string.Empty ? Color.DEFAULT_COLOR : data.ContentColor;
-
+        _color = _data.ComponentColor;
+        
         //Set Colors that applied to Text
         _data.ComponentColor = data.ComponentColor == string.Empty ? DEFAULT_BORDER_COLOR : data.ComponentColor;
         
         //Set Border Style
         Style = data.Style;
         
-        SetCursorPosition(new());
+        MakeTopLine(1, _width);
+        MakeMidLine(1, _width, _height);
+        MakeBottonLine(1, _width);
     }
     
     
-    public sealed override void Render()
+    public sealed override Component Render()
     {
         if (_data != null)
         {
             SetData(_data);
-            RenderBorders();
+            base.Render();
             RenderPlaceholder();
         }
+        return this;
     }
 
 
-    private void RenderBorders()
-    {
-        Color.SetTextColor(DEFAULT_BORDER_COLOR);
-        SetCursorPosition(transform.position);
-
-        string[] data = {
-            MakeTopLine(1, _width),
-            MakeMidLine(1, _width, _height),
-            MakeBottonLine(1, _width)
-        };
-       
-        
-        for (int i = 0; i < data.Length; i++) {
-            SetCursorPosition(transform.position.x, transform.position.y + i);
-            Console.Write(data[i]);
-        }
-    }
 
 
-    private void RenderPlaceholder()
-    {
+    private void RenderPlaceholder() {
         Color.SetTextColor(_data.Placeholder.color);
         SetCursorPosition(transform.position.x + 1, transform.position.y + 1);
         Console.Write(_data.Placeholder.value);

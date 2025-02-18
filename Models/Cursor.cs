@@ -17,9 +17,8 @@ public sealed class Cursor
         Vector2 cursorPosition,
         Vector2 newPosition = default 
     ){
-        //If dont have space in the terminal, it make more
-        TerminalCofig.ExpandTerminalSize(newPosition);
-
+        Vector2 _expansePosition = new();
+        
         //Set Horizontal Axis
         if (newPosition.x == 0)
             cursorPosition = new(selfPosition.x, cursorPosition.y);
@@ -31,8 +30,12 @@ public sealed class Cursor
             cursorPosition = new(cursorPosition.x, selfPosition.y);
         else
             cursorPosition = new(cursorPosition.x, newPosition.y);
-
+        
         //Set New cursorPosition
         Console.SetCursorPosition(cursorPosition.x, cursorPosition.y);
+        _expansePosition = new(cursorPosition.x, cursorPosition.y);
+        
+        //If dont have space in the terminal, it make more
+        TerminalCofig.ExpandTerminalSize(_expansePosition);
     }
 }

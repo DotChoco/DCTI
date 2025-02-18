@@ -8,7 +8,16 @@ public sealed class TerminalCofig
     {
         //Make a new vertical space in the console
         if (size.y >= Console.WindowHeight) { Console.WindowHeight++; }
+        
         //Make a new horizontal space in the console
         if (size.x >= Console.WindowWidth) { Console.WindowWidth++; }
+    }
+    
+    public static void ReduceTerminalSize()
+    {
+        //Make a new vertical space in the console
+        if (Console.WindowHeight > 0) { Console.WindowHeight--; }
+        //Make a new horizontal space in the console
+        if (Console.WindowWidth > 0) { Console.WindowWidth--; }
     }
 }

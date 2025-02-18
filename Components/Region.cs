@@ -1,22 +1,22 @@
-using DCTI.Models;
+﻿using DCTI.Models;
+using DCTI.Structs;
 
-namespace DCTI.Components
+namespace DCTI.Components;
+
+public sealed class Region: Fields
 {
-    public sealed class Region : MFields
-    {
+    public string Color = Models.Color.DEFAULT_COLOR;
+    public Region(){}
 
-        public sealed override void Render()
-        {
-            RenderBorders();
-        }
+    public sealed override Component Render() {
+        SetData();
+        base.Render();
+        return this;
+    }
 
-
-        private void RenderBorders()
-        {
-            
-        }
-
-
-
+    public void SetData() {
+        MakeTopLine(1,_width);
+        MakeMidLine(1,_width, _height,false);
+        MakeBottonLine(1,_width);
     }
 }
