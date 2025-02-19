@@ -2,7 +2,7 @@ namespace DCTI.Structs
 {
     public sealed class MText
     {
-        public string value { get; set; }
-        public string color { get; set; } = "AC90D8";
+        public string value { get; set; } = String.Empty;
+        public string color { get; set; } = "ffffff";
     }
 }

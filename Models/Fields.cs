@@ -44,20 +44,6 @@ public abstract class Fields : Component
     public int Width { get => _width; set => _width = value; }
     
     
-    //Size Methods
-    public Component SetSize(int width, int height)
-        => SetSize(new(width, height));
-    public Component SetSize(Vector2 size) {
-        _width = size.x > _minWidth ? size.x : _minWidth;
-        _height = size.y > _minHeight ? size.y : _minHeight;
-        return this;
-    }
-
-    public Vector2 GetSize()  => new (_width, _height);
-    
-    
-    
-    
     //Render Methods
     public override Component Render()
     {
@@ -72,14 +58,11 @@ public abstract class Fields : Component
         
         return this;
     }
+    
     public Component SetColor(string hex) {
-        Color.SetTextColor(_color);
-        Color.SetTextColor(hex);
+        _color = hex;
         return this;
     }
-    
-    
-    
     
     
     

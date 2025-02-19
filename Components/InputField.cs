@@ -2,6 +2,7 @@ using System.Text;
 using DCTI.Models;
 using DCTI.Structs.Enums;
 using DCTI.Models;
+using DCTI.Structs;
 
 namespace DCTI.Components;
 public sealed class InputField : Fields
@@ -22,6 +23,23 @@ public sealed class InputField : Fields
     
     #endregion
 
+    
+    //Size Methods
+    public Component SetSize(int width, int height)
+        => SetSize(new(width, height));
+    public Component SetSize(Vector2 size) {
+        _width = size.x > _minWidth ? size.x : _minWidth;
+        _height = size.y > _minHeight ? size.y : _minHeight;
+        return this;
+    }
+    
+    public Vector2 GetSize()  => new (_width, _height);
+
+    
+    
+    
+    
+    
     public InputField() => _data = null;
     
     public InputField(InputFieldData data) => _data = data;

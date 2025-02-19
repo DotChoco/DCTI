@@ -1,41 +1,27 @@
 ﻿using DCTI.Models;
 using DCTI.Structs;
 
-namespace DCTI.Interfaces;
-public sealed class Cursor
+namespace DCTI.Statics;
+public static class Cursor
 {
     public static void SetCursorPosition(
-        Vector2 selfPosition, 
-        Vector2 cursorPosition,
-        int x, int y 
-    ){
-        SetCursorPosition(selfPosition, cursorPosition,new Vector2(x, y));
-    }
-    
-    public static void SetCursorPosition(
-        Vector2 selfPosition,
-        Vector2 cursorPosition,
+        Vector2 componentPosition,
         Vector2 newPosition = default 
     ){
-        Vector2 _expansePosition = new();
-        
         //Set Horizontal Axis
-        if (newPosition.x == 0)
-            cursorPosition = new(selfPosition.x, cursorPosition.y);
-        else
-            cursorPosition = new(newPosition.x, cursorPosition.y);
-
-        //Set Vertical Axis
-        if (newPosition.y == 0)
-            cursorPosition = new(cursorPosition.x, selfPosition.y);
-        else
-            cursorPosition = new(cursorPosition.x, newPosition.y);
+        if (newPosition.x > 0)
+            newPosition = new(componentPosition.x, newPosition.y);
         
-        //Set New cursorPosition
-        Console.SetCursorPosition(cursorPosition.x, cursorPosition.y);
-        _expansePosition = new(cursorPosition.x, cursorPosition.y);
+        //Set Vertical Axis
+        if (newPosition.y > 0)
+            newPosition = new(newPosition.x, componentPosition.y);
+        else
+            newPosition = new(newPosition.x, newPosition.y);
         
         //If dont have space in the terminal, it make more
-        TerminalCofig.ExpandTerminalSize(_expansePosition);
+        TerminalCofig.ExpandTerminalSize(newPosition);
+        
+        //Set New cursorPosition
+        Console.SetCursorPosition(newPosition.x, newPosition.y);
     }
 }

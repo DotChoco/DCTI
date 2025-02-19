@@ -1,20 +1,23 @@
 ﻿using DCTI.Structs;
 
-namespace DCTI.Models;
+namespace DCTI.Statics;
 
-public sealed class TerminalCofig
-{
-    public static void ExpandTerminalSize(Vector2 size)
-    {
+public static class TerminalCofig {
+    public static void ExpandTerminalSize(Vector2 size) {
         //Make a new vertical space in the console
-        if (size.y >= Console.WindowHeight) { Console.WindowHeight++; }
+        if (size.y >= Console.WindowHeight) {
+            Console.BufferHeight = size.y + 1;
+            Console.WindowHeight = size.y + 1;
+        }
         
         //Make a new horizontal space in the console
-        if (size.x >= Console.WindowWidth) { Console.WindowWidth++; }
+        if (size.x >= Console.WindowWidth) {
+            Console.BufferWidth = size.x + 1;
+            Console.WindowWidth = size.x + 1;
+        }
     }
     
-    public static void ReduceTerminalSize()
-    {
+    public static void ReduceTerminalSize() {
         //Make a new vertical space in the console
         if (Console.WindowHeight > 0) { Console.WindowHeight--; }
         //Make a new horizontal space in the console
